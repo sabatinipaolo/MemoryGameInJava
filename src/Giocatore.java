@@ -1,46 +1,49 @@
 import java.util.Scanner;
 
 public class Giocatore {
-    private Scanner sc = new Scanner(System.in);
-
-    private static int leggeInInput(Scanner sc) {
-        int indiceScelto;
-        System.out.print("quale carta vuoi scoprire ? ");
-        indiceScelto = sc.nextInt();
-        return indiceScelto;
-    }
-
     public Carta scopreUnaCartaDel(Mazzo mazzo) {
 
-        int indiceScelto = leggeInInput(sc);
-        while (inputNonCorretto(indiceScelto, mazzo)) {
-            indiceScelto = leggeInInput(sc);
-        }
+        int indice = 0;
 
-        mazzo.getCartaAllaPosizione(indiceScelto).scopriti();
+        while (true) {
+            try {
+                indice = letturaInInput(mazzo);
+                break;
+            } catch (MemoryGameException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+        Carta carta_scelta = mazzo.getCarta(indice);
+        carta_scelta.scopriti();
         mazzo.stampa();
 
-        return mazzo.getCartaAllaPosizione(indiceScelto);
+        return mazzo.getCarta(indice);
     }
 
-    private boolean inputNonCorretto(int indiceScelto, Mazzo mazzo) {
 
-        if ((indiceScelto < 0) || (indiceScelto > 9)) {
-            System.out.println("scelta non corretta");
-            return true;
+    public int letturaInInput(Mazzo mazzo) {
+        Scanner sc = new Scanner(System.in);
+        try {
+            System.out.print("Scegli una carta ");
+            String input  = sc.nextLine();
+            input=input.trim();
+
+            int indice = Integer.parseInt( input);
+
+            if ((indice <0 ) || (indice>9))
+                throw new MemoryGameException( "errore: indice non consentito ");
+            if (mazzo.getCarta(indice).isNotInGioco())
+                throw new MemoryGameException( "errore: la carta indicata non è in gioco");
+            if ( mazzo.getCarta(indice).isNotCoperta() )
+                throw new MemoryGameException( "errore: la carta indicata è già scoperta");
+
+
+            return indice;
+
+        } catch (NumberFormatException e) {
+            throw new MemoryGameException( "errore: non hai inserito un intero ");
         }
 
-        if (mazzo.getCartaAllaPosizione(indiceScelto).isNotInGioco()) {
-            System.out.println("scelta non corretta");
-            return true;
-        }
-
-        if (mazzo.getCartaAllaPosizione(indiceScelto).isNotCoperta()) {
-            System.out.println("scelta non corretta");
-            return true;
-        }
-
-        return false;
     }
 
 }

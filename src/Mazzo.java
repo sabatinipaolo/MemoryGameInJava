@@ -63,4 +63,8 @@ public class Mazzo {
     public Carta getCartaAllaPosizione(int i) {
         return carte[i];
     }
+
+    public Carta getCarta(int indice) {
+        return carte[indice];
+    }
 }
